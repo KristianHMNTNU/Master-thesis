@@ -5,9 +5,9 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    config = os.path.join(
-        get_package_share_directory("master_sim"), "config", "csad.yaml"
-    )
+    share = get_package_share_directory("master_sim")
+    config = os.path.join(share, "config", "csad.yaml")
+    rviz_config = os.path.join(share, "rviz", "sim.rviz")
 
     sim = Node(
         package="master_sim",
@@ -16,4 +16,10 @@ def generate_launch_description():
         output="screen",
     )
 
-    return LaunchDescription([sim])
+    rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        arguments=["-d", rviz_config],
+    )
+
+    return LaunchDescription([sim, rviz])
