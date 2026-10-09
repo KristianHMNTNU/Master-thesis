@@ -1,42 +1,79 @@
 import rclpy
 from rclpy.node import Node
 import numpy as np
-from mcsimpy.simulator import CSAD_DP_6DOF
+from mcsimpy.simulator import CSAD_DP_6DOF, CSADMan3DOF, RVG_DP_6DOF, GunnerusManeuvering3DoF
 from nav_msgs.msg import Odometry
 from scipy.spatial.transform import Rotation
 from geometry_msgs.msg import Wrench
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 
+VESSELS = {
+    "CSAD_DP_6DOF": CSAD_DP_6DOF,
+    "CSADMan3DOF": CSADMan3DOF,
+    "RVG_DP_6DOF": RVG_DP_6DOF,
+    "GunnerusManeuvering3DoF": GunnerusManeuvering3DoF,
+}
+
+
 
 class McsimNode(Node):
     def __init__(self):
         super().__init__("mcsim_node")
-        self.get_logger().info("Simulation has started")
-        
+
+        self.declare_parameter("vessel", "CSAD_DP_6DOF")
+        self.declare_parameter("dt", 0.01)
+        self.declare_parameter("initial_pose", [0.0, 0.0, 0.0])
+        self.declare_parameter("current_speed", 0.0)
+        self.declare_parameter("current_direction", 0.0)
+
+        vessel_name = self.get_parameter("vessel").value
+        self.dt = self.get_parameter("dt").value
+        x0, y0, psi0 = self.get_parameter("initial_pose").value
+
+        self.vessel = VESSELS[vessel_name](dt=self.dt, method="RK4")
+        self.dof = self.vessel._dof
+        if self.dof == 3:
+            self.vessel.set_eta(np.array([x0, y0, psi0]))
+        else:
+            self.vessel.set_eta(np.array([x0, y0, 0.0, 0.0, 0.0, psi0]))
+
+        self.get_logger().info(f"Simulating {vessel_name} ({self.dof} DOF), dt = {self.dt} s")
+
+        self.tau = np.zeros(6)
+        self.counter = 0
         self.odom_pub = self.create_publisher(Odometry, "measurement/odom", 10)
         self.wrench_sub = self.create_subscription(Wrench, "control/force/command", self.force_callback, 10)
-
-        self.dt = 0.01
-        self.counter = 0
-
-        self.vessel = CSAD_DP_6DOF(dt=self.dt, method="RK4")
-        self.tau = np.zeros(6)
-        self.create_timer(self.dt, self.step)
         self.tf_broadcaster = TransformBroadcaster(self)
+        self.create_timer(self.dt, self.step)
+        self.log_every = round(1.0 / self.dt)
 
     def step(self):
         self.counter += 1
-        self.vessel.integrate(0.0, 0.0, self.tau)
+
+        if self.dof == 3:
+            tau = self.tau[[0, 1, 5]]
+        else:
+            tau = self.tau
+
+
+        Uc = self.get_parameter("current_speed").value
+        beta_c = self.get_parameter("current_direction").value
+        self.vessel.integrate(Uc, beta_c, tau)
 
         eta = self.vessel.get_eta()
         nu = self.vessel.get_nu()
+
+        if self.dof == 3:
+            eta = np.array([eta[0], eta[1], 0.0, 0.0, 0.0, eta[2]])
+            nu = np.array([nu[0], nu[1], 0.0, 0.0, 0.0, nu[2]])
+
         q = Rotation.from_euler("xyz", eta[3:6]).as_quat()
 
         self.publish_odom(eta, nu, q)
         self.publish_transform(eta, q)
 
-        if self.counter % 100 == 0:
+        if self.counter % self.log_every == 0:
             self.get_logger().info(f"t = {self.counter * self.dt:.1f} s, x = {eta[0]:.3f} m, y = {eta[1]:.3f} m, psi = {eta[5]:.3f} rad")
         
 
