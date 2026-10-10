@@ -4,9 +4,8 @@ import numpy as np
 from mcsimpy.simulator import CSAD_DP_6DOF, CSADMan3DOF, RVG_DP_6DOF, GunnerusManeuvering3DoF
 from nav_msgs.msg import Odometry
 from scipy.spatial.transform import Rotation
-from geometry_msgs.msg import Wrench
+from geometry_msgs.msg import Wrench, WrenchStamped, TransformStamped
 from tf2_ros import TransformBroadcaster
-from geometry_msgs.msg import TransformStamped
 
 VESSELS = {
     "CSAD_DP_6DOF": CSAD_DP_6DOF,
@@ -43,6 +42,7 @@ class McsimNode(Node):
         self.tau = np.zeros(6)
         self.counter = 0
         self.odom_pub = self.create_publisher(Odometry, "measurement/odom", 10)
+        self.tau_pub = self.create_publisher(WrenchStamped, "simulator/tau", 10)
         self.wrench_sub = self.create_subscription(Wrench, "control/force/command", self.force_callback, 10)
         self.tf_broadcaster = TransformBroadcaster(self)
         self.create_timer(self.dt, self.step)
@@ -72,6 +72,7 @@ class McsimNode(Node):
 
         self.publish_odom(eta, nu, q)
         self.publish_transform(eta, q)
+        self.publish_tau()
 
         if self.counter % self.log_every == 0:
             self.get_logger().info(f"t = {self.counter * self.dt:.1f} s, x = {eta[0]:.3f} m, y = {eta[1]:.3f} m, psi = {eta[5]:.3f} rad")
@@ -120,6 +121,17 @@ class McsimNode(Node):
         self.tau[4] = msg.torque.y
         self.tau[5] = msg.torque.z
 
+    def publish_tau(self):
+        msg = WrenchStamped()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.header.frame_id = "base_link_ned"
+        msg.wrench.force.x = float(self.tau[0])
+        msg.wrench.force.y = float(self.tau[1])
+        msg.wrench.force.z = float(self.tau[2])
+        msg.wrench.torque.x = float(self.tau[3])
+        msg.wrench.torque.y = float(self.tau[4])
+        msg.wrench.torque.z = float(self.tau[5])
+        self.tau_pub.publish(msg)
 
 def main(args=None):
     rclpy.init(args=args)

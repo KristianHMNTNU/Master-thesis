@@ -6,6 +6,9 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /RobotModel1
+        - /RobotModel1/Description Topic1
+        - /Wrench1
       Splitter Ratio: 0.5
     Tree Height: 1110
   - Class: rviz_common/Selection
@@ -20,7 +23,7 @@ Panels:
     Expanded:
       - /Current View1
     Name: Views
-    Splitter Ratio: 0.5
+    Splitter Ratio: 0.48991355299949646
   - Class: rviz_common/Time
     Experimental: false
     Name: Time
@@ -54,7 +57,27 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        base_link:
+          Value: true
         base_link_ned:
+          Value: true
+        bow_center_thruster_link:
+          Value: true
+        bow_port_thruster_link:
+          Value: true
+        bow_starboard_thruster_link:
+          Value: true
+        imu_link:
+          Value: true
+        map:
+          Value: true
+        mocap_link:
+          Value: true
+        stern_center_thruster_link:
+          Value: true
+        stern_port_thruster_link:
+          Value: true
+        stern_starboard_thruster_link:
           Value: true
         world:
           Value: true
@@ -64,9 +87,26 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        world:
-          base_link_ned:
-            {}
+        map:
+          world:
+            base_link_ned:
+              base_link:
+                imu_link:
+                  {}
+              bow_center_thruster_link:
+                {}
+              bow_port_thruster_link:
+                {}
+              bow_starboard_thruster_link:
+                {}
+              mocap_link:
+                {}
+              stern_center_thruster_link:
+                {}
+              stern_port_thruster_link:
+                {}
+              stern_starboard_thruster_link:
+                {}
       Update Interval: 0
       Value: true
     - Angle Tolerance: 0.10000000149011612
@@ -108,10 +148,96 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /measurement/odom
       Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_description
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_link_ned:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        bow_center_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        bow_port_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        bow_starboard_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        mocap_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        stern_center_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        stern_port_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        stern_starboard_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: RobotModel
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Accept NaN Values: false
+      Alpha: 1
+      Arrow Width: 0.5
+      Class: rviz_default_plugins/Wrench
+      Enabled: true
+      Force Arrow Scale: 2
+      Force Color: 204; 51; 51
+      History Length: 1
+      Name: Wrench
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /simulator/tau
+      Torque Arrow Scale: 2
+      Torque Color: 204; 204; 51
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: world
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -154,25 +280,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 5.071908950805664
+      Distance: 6.533949375152588
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.5708049535751343
-        Y: -0.15270672738552094
-        Z: -0.1586054265499115
+        X: -0.12155195325613022
+        Y: 0.2574154734611511
+        Z: 0.14270052313804626
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7803980112075806
+      Pitch: 0.5053988695144653
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.0404051542282104
+      Yaw: 3.41042160987854
     Saved: ~
 Window Geometry:
   Displays:
@@ -180,7 +306,7 @@ Window Geometry:
   Height: 1628
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001f400000552fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b000000b200fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000070000005520000018600fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000015d00000552fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730100000070000005520000013800fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006d50000005efc0100000002fb0000000800540069006d00650100000000000006d50000047a00fffffffb0000000800540069006d006501000000000000045000000000000000000000036c0000055200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001f400000552fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b000000b200fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000070000005520000018600fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000015d00000552fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730100000070000005520000013800fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006cc0000005efc0100000002fb0000000800540069006d00650100000000000006cc0000047a00fffffffb0000000800540069006d00650100000000000004500000000000000000000003630000055200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -189,6 +315,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1749
+  Width: 1740
   X: 135
   Y: 309
